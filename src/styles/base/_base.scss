@@ -1,0 +1,47 @@
+* {
+    box-sizing: border-box;
+}
+
+html {
+  @media (max-width: $desktop-breakpoint) {
+    font-size: 48%;
+  }
+  @media (min-width: $desktop-breakpoint) {
+    font-size: 62.5%;
+  }
+}
+
+body {
+    font-family: 'Rubik',sans-serif;
+    font-size: $m-size;
+    line-height: 1.6;
+}
+
+button {
+    cursor: pointer;
+}
+button:disabled {
+    cursor: default;
+}
+p{
+    margin: 0;
+}
+.clickable{
+    @extend .unselectable-text;
+    cursor: pointer;
+}
+.invisible{
+    visibility: hidden;
+}
+.flex-center{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.unselectable-text{
+    -webkit-user-select: none;  /* Chrome all / Safari all */
+    -moz-user-select: none;     /* Firefox all */
+    -ms-user-select: none;      /* IE 10+ */
+    user-select: none;          /* Likely future */ 
+    -webkit-user-drag: none;
+}
