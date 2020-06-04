@@ -1,5 +1,10 @@
 @import './base/settings';
 @import './base/base';
-@import './components/MainPage';
+@import './components/AppContainer';
 @import './components/Footer';
 @import './components//NotFoundPage';
+@import './components/MainPageContainer';
+@import './components/game/GameComponent';
+@import './components/generics/ScoreRectangle';
+@import './components/generics/Button';
+@import './components/game/Board';

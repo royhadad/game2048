@@ -1,0 +1,20 @@
+.game-board{
+    width: 100%;
+    background: $score-rectangle-background;
+    border-radius: 0.8rem;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+
+    >.game-board__collum{
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        width: 22%;
+
+        >.game-board__square{
+            background: $board-square-background;
+            height: 22%;
+        }
+    }
+}

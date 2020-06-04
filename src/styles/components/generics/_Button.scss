@@ -1,0 +1,10 @@
+.button{
+    @extend .clickable;
+    padding: 1rem 1.5rem;
+    background: $button-background;
+    color: $button-text-color;
+    font-weight: $bold-weight;
+    border-radius: 0.3rem;
+    text-align: center;
+    vertical-align: auto;
+}

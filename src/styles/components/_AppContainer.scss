@@ -1,0 +1,25 @@
+.app-container{
+    display: flex;
+    flex-direction: row;
+
+    >.main-area-container{
+        width: 80%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        background: $background-color;
+        >.content-wrapper{
+            width: 40%;
+            min-height: 100vh;
+
+        }
+        >.footer-wrapper{
+            background: $background-color;
+        }
+    }
+    >.side-bar{
+        width: 10%;
+        background: darken($background-color, 5);
+    }
+}

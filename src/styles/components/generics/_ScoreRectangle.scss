@@ -1,0 +1,23 @@
+.score-rectangle__wrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    background: $score-rectangle-background;
+    padding: 0rem 1rem;
+    margin: 3rem 0.25rem;
+    border-radius: 0.3rem;
+
+    >.score-rectangle__title{
+        color: $score-rectangle-title-color;
+        font-weight: $bold-weight;
+        padding-top: 0.2rem;
+    }
+
+    >.score-rectangle__score{
+        color: white;
+        font-weight: $bold-weight;
+        font-size: $font-size-xl;
+        padding: 0rem 1rem;
+    }
+}

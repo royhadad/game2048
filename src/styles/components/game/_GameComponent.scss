@@ -1,0 +1,32 @@
+.game-wrapper{
+    >.game-ui{
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 2rem;
+    
+        >.game-ui-top{
+            display: flex;        
+            flex-direction: row;
+            justify-content: space-between;
+            >.game-ui-top-left{
+                width: 30%;
+                font-size: $font-size-xxxl;
+                font-weight: $bold-weight;
+            }
+            >.game-ui-top-right{
+                display: flex;
+                flex-direction: row;
+            }
+        }
+        >.game-ui-bottom{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+
+            >.game-ui-bottom__text{
+                font-size: $font-size-l;
+            }
+        }
+    }
+}

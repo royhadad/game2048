@@ -1,3 +1,13 @@
 .footer{
-    
+    padding: 3rem 1rem;
+    @extend .flex-center;
+    background: $background-color;
+
+    a{
+        @extend .react-link;
+        padding: 0 0.5rem;
+    }
+    >span{
+        padding: 0 0.5rem;
+    }
 }
