@@ -6,7 +6,7 @@
     flex-direction: row;
     justify-content: space-evenly;
 
-    >.game-board__collum{
+    >.game-board__collumn{
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
@@ -15,6 +15,7 @@
         >.game-board__square{
             background: $board-square-background;
             height: 22%;
+            border-radius: 0.4rem;
         }
     }
 }

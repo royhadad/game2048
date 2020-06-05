@@ -1,0 +1,8 @@
+.tile{
+    position: absolute;
+    font-weight: 700;
+    z-index: 10;
+    border-radius: 0.4rem;
+    transition-timing-function: ease-in;
+    @extend .flex-center;
+}

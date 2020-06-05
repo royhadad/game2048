@@ -23,11 +23,11 @@ export default (props) => (
                 Learn more about 2048 Game
             </h1>
             <div className='links-squares__wrapper'>
-                <div className='links-squares__collum'>
+                <div className='links-squares__collumn'>
                     <div className='link-square'><Link to='/tips-and-tricks'>{`Tips & Tricks`}</Link></div>
                     <div className='link-square'><Link to='/quotes'>2048 Quotes</Link></div>
                 </div>
-                <div className='links-squares__collum'>
+                <div className='links-squares__collumn'>
                     <div className='link-square'><Link to='/videos'>2048 Videos</Link></div>
                     <div className='link-square'><Link to='/variations'>2048 Variations</Link></div>
                 </div>
