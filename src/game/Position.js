@@ -13,9 +13,10 @@ class Position {
             return false;
         }
     }
-    moveWithVector(vector) {
-        this.collumn = this.collumn + vector.horizontal;
-        this.row = this.row + vector.vertical;
+
+    //returns a new position object with the vector added
+    addVector(vector) {
+        return new Position(this.collumn + vector.horizontal, this.row + vector.vertical);
     }
 }
 

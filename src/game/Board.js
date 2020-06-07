@@ -6,7 +6,7 @@ import Position from './Position';
 
 const NUM_OF_COLLUMNS = 4;
 const NUM_OF_ROWS = 4;
-const MOVEMENT_TRANSITION_DURATION = 1.0;//for dev, in production 0.2
+//const MOVEMENT_TRANSITION_DURATION = 1.0;//for dev, in production 0.2
 
 class Board {
     constructor() {
@@ -16,6 +16,9 @@ class Board {
             for (let row = 0; row < NUM_OF_ROWS; row++) {
                 this.tilesArray[collumn][row] = [];
             }
+        }
+        for (let i = 0; i < 10; i++) {
+            this.getRandomEmptyPosition();
         }
     }
 
@@ -47,7 +50,7 @@ class Board {
         if (this.isFull(position)) {
             throw new Error('addTileAtPosition() cant add tile, position is full!');
         }
-        this.tilesArray[position.collumn][position.row].push(tile);
+        this.at(position).push(tile);
     }
     removeTileFromCurrentPositionByAttributes(tile) {
         const tilePosition = this.getTilePosition(tile);
@@ -76,20 +79,25 @@ class Board {
     //CODE
     //})
     forEachTile(callback) {
+        const allTiles = [];
         for (let collumn = 0; collumn < NUM_OF_COLLUMNS; collumn++) {
             for (let row = 0; row < NUM_OF_ROWS; row++) {
                 if (!this.isEmpty(new Position(collumn, row))) {
                     this.at(new Position(collumn, row)).forEach((tile) => {
-                        callback(tile, new Position(collumn, row));
+                        allTiles.push(tile);
                     })
                 }
             }
         }
+
+        allTiles.forEach((tile) => {
+            callback(tile, this.getTilePosition(tile));
+        })
     }
 
     addNewTile(value = 2, position) {
         if (!position) {
-            position = this.getRandomEmptyCollumnAndRow();
+            position = this.getRandomEmptyPosition();
         }
         const backgroundColor = getTileBackgroundByValue(value);
         const numberColor = getNumberColorByValue(value);
@@ -104,17 +112,21 @@ class Board {
         newTile.style.color = numberColor;
         newTile.innerText = value;
         newTile.style.fontSize = getTileFontSizeFromTextLength(value.toString().length);
+        newTile.style.height = '0px';
+        newTile.style.width = '0px';
+        newTile.style.top = '0px';
+        newTile.style.left = '0px';
 
         this.addTileAtPosition(newTile, position);
         return newTile;
     }
 
-    getRandomEmptyCollumnAndRow() {
+    getRandomEmptyPosition() {
         const numberOfEmptySquares = this.getNumberOfEmptySquaresInBoard();
         const randomNumber = floor(random(0, numberOfEmptySquares));
-        return this.getCollumnAndRowFromRandomNumber(randomNumber);
+        return this.getPositionFromRandomNumber(randomNumber);
     }
-    getCollumnAndRowFromRandomNumber(randomNumber) {
+    getPositionFromRandomNumber(randomNumber) {
         let counter = 0;
         for (let collumn = 0; collumn < NUM_OF_COLLUMNS; collumn++) {
             for (let row = 0; row < NUM_OF_ROWS; row++) {
@@ -132,7 +144,7 @@ class Board {
         let numberOfEmptySquares = 0;
         for (let collumn = 0; collumn < NUM_OF_COLLUMNS; collumn++) {
             for (let row = 0; row < NUM_OF_ROWS; row++) {
-                if (!this.isEmpty(new Position(collumn, row))) {
+                if (this.isEmpty(new Position(collumn, row))) {
                     numberOfEmptySquares++;
                 }
             }

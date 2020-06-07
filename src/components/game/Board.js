@@ -8,11 +8,12 @@ class Board extends React.Component {
         super(props);
         this.boardRef = React.createRef();
     }
-    componentDidMount() {
+    async componentDidMount() {
         setBoardsHeightEqualToWidth();
         //create new game
         const boardElement = this.boardRef.current;
         this.game = new Game(boardElement);
+        await this.game.init();
 
         //listen to screen size changes and adjust game tiles
         adjustBoardOnResize = (game) => {
