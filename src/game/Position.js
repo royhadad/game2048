@@ -18,6 +18,10 @@ class Position {
     addVector(vector) {
         return new Position(this.collumn + vector.horizontal, this.row + vector.vertical);
     }
+
+    equals(otherPosition) {
+        return (this.collumn === otherPosition.collumn && this.row === otherPosition.row)
+    }
 }
 
 export default Position;

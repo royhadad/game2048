@@ -3,6 +3,7 @@ import getTileBackgroundByValue from '../utility/getTileBackgroundByValue';
 import getNumberColorByValue from '../utility/getNumberColorByValue';
 import getTileFontSizeFromTextLength from '../utility/getTileFontSizeFromTextLength';
 import Position from './Position';
+import { v4 as uuid } from 'uuid';
 
 const NUM_OF_COLLUMNS = 4;
 const NUM_OF_ROWS = 4;
@@ -39,7 +40,7 @@ class Board {
             throw new Error('moveTile method failed!');
         }
 
-        this.removeTileFromCurrentPositionByAttributes(tile)
+        this.removeTileFromCurrentPosition(tile)
         tile.setAttribute('data-collumn', targetPosition.collumn);
         tile.setAttribute('data-row', targetPosition.row);
         this.addTileAtPosition(tile, targetPosition);
@@ -52,11 +53,12 @@ class Board {
         }
         this.at(position).push(tile);
     }
-    removeTileFromCurrentPositionByAttributes(tile) {
+    removeTileFromCurrentPosition(tile) {
+        const tileId = tile.getAttribute('id');
         const tilePosition = this.getTilePosition(tile);
         this.at(tilePosition).forEach((iteratedTile, index) => {
-            if (tile === iteratedTile) {
-                this.at(tilePosition).splice(index, 1);
+            if (tileId === iteratedTile.getAttribute('id')) {
+                this.tilesArray[tilePosition.collumn][tilePosition.row] = [...this.at(tilePosition).slice(0, index), ...this.at(tilePosition).slice(index + 1)];
                 return;
             }
         })
@@ -65,7 +67,9 @@ class Board {
     at(position) {
         return this.tilesArray[position.collumn][position.row];
     }
-
+    tileAt(position) {
+        return this.tilesArray[position.collumn][position.row][0] || this.tilesArray[position.collumn][position.row][1];
+    }
     getTilePosition(tile) {
         if (!tile) {
             throw new Error('getTilePosition error! no tile found');
@@ -116,6 +120,7 @@ class Board {
         newTile.style.width = '0px';
         newTile.style.top = '0px';
         newTile.style.left = '0px';
+        newTile.id = uuid();
 
         this.addTileAtPosition(newTile, position);
         return newTile;

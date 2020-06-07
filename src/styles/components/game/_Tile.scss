@@ -3,7 +3,7 @@
     font-weight: 700;
     z-index: 10;
     border-radius: 0.4rem;
-    transition-timing-function: ease-in;
+    transition-timing-function: linear; //change to linear
     transition: top, left, width, height, font-size;
     @extend .flex-center;
 }
