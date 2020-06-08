@@ -20,6 +20,6 @@
     }
     >.side-bar{
         width: 10%;
-        background: darken($background-color, 5);
+        background: $side-bar-background;
     }
 }

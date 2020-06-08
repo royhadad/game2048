@@ -41,23 +41,25 @@
             }
         }
 
-        .twitter-share-button{
-            background: #1C96E0;
-            color: white;
-            padding: 0.2rem 1rem;
-            font-weight: $bold-weight;
-            border-radius: 0.3rem;
-            font-size: 1.5rem;
-            @extend .clickable;
-        }
-        .facebook-share-button{
-            background: white;
-            color: #394F9F;
-            padding: 0.2rem 1rem;
-            font-weight: $bold-weight;
-            text-decoration: underline;
-            font-size: 1.5rem;
-            @extend .clickable;
+        .share-buttons-wrapper{
+            display: flex;
+            align-items: center;
+            .generic-share-button{
+                padding: 0.2rem 1rem;
+                font-weight: $bold-weight;
+                border-radius: 0.3rem;
+                font-size: 1.5rem;
+                text-decoration: none;
+                margin-right: 1rem;
+            }
+            .twitter-share-button{
+                background: #1C96E0;
+                color: white;
+                @extend .generic-share-button;
+            }
+            .facebook-share-button{
+                
+            }
         }
     }
 }

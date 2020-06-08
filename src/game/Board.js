@@ -1,13 +1,11 @@
 import { random, floor } from 'mathjs';
 import getTileBackgroundByValue from '../utility/getTileBackgroundByValue';
 import getNumberColorByValue from '../utility/getNumberColorByValue';
-import getTileFontSizeFromTextLength from '../utility/getTileFontSizeFromTextLength';
 import Position from './Position';
 import { v4 as uuid } from 'uuid';
 
 const NUM_OF_COLLUMNS = 4;
 const NUM_OF_ROWS = 4;
-//const MOVEMENT_TRANSITION_DURATION = 1.0;//for dev, in production 0.2
 
 class Board {
     constructor() {
@@ -115,11 +113,9 @@ class Board {
         newTile.style.background = backgroundColor;
         newTile.style.color = numberColor;
         newTile.innerText = value;
-        newTile.style.fontSize = getTileFontSizeFromTextLength(value.toString().length);
+        newTile.style.fontSize = '0px';
         newTile.style.height = '0px';
         newTile.style.width = '0px';
-        newTile.style.top = '0px';
-        newTile.style.left = '0px';
         newTile.id = uuid();
 
         this.addTileAtPosition(newTile, position);

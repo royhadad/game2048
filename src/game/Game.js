@@ -4,16 +4,17 @@ import Position from './Position';
 import TileBuilder from './TileBuilder';
 import Board from './Board';
 import getTileFontSizeFromTextLength from '../utility/getTileFontSizeFromTextLength';
-import { v4 as uuid } from 'uuid';
 import asyncSetTimeOut from '../utility/asyncSetTimeOut';
 import Queue from 'js-queue';
 
 const LEFT_ARROW_KEY_CODE = 37;
 const UP_ARROW_KEY_CODE = 38;
 const RIGHT_ARROW_KEY_CODE = 39;
-const DOWN_ARROW_KEY_CODE = 40;
-const MOVEMENT_TRANSITION_DURATION = 200;//for dev, in production 200
-const IMMEDIATE_TRANSITION_DURATION = 1;//in order to catch the transitionend event
+const DOWN_ARROW_KEY_CODE = 40;//TODO MAYBE ADD ANOTHER DURATION STEP
+const DEFAULT_TRANSITION_DURATION = 100;
+const CATCH_UP_TRANSITION_DURATION = 0; //for when alot of moves need to happen quickly
+let MOVEMENT_TRANSITION_DURATION = DEFAULT_TRANSITION_DURATION;
+const IMMEDIATE_TRANSITION_DURATION = 0;//in order to catch the transitionend event
 
 const NUM_OF_COLLUMNS = 4;
 const NUM_OF_ROWS = 4;
@@ -22,11 +23,12 @@ const NUM_OF_ROWS = 4;
 //const MERGE_TRANSITION_DURATION = 1.0;// for dev, in production around 0.2
 
 class Game {
-    constructor(boardElement) {
+    constructor(boardElement, dispatchCurrentScore) {
         this.boardElement = boardElement;
-
+        this.dispatchCurrentScore = dispatchCurrentScore;
         //bind functions to prevent "this" problems
         this.placeAdjustAndMoveTilesToCorrectLocationOnBoard = this.placeAdjustAndMoveTilesToCorrectLocationOnBoard.bind(this);
+        this.movesWaitingToFire = new Queue();
 
         //prep work
         this.fetchAndSetBoardArray();
@@ -36,14 +38,13 @@ class Game {
     }
     async init() {
         //start a new game
-        this.board = new Board();
-
-        this.elementsInTransitionIds = {};
-        this.movesWaitingToFire = new Queue(async (vector, cb) => {
-            //TODO FIX MOVE BATCHING!!!
-            await this.move(vector);
-            cb();
+        Array.from(this.boardElement.querySelectorAll('.tile')).forEach((tileElement) => {
+            this.boardElement.removeChild(tileElement);
         });
+        this.board = new Board();
+        this.currentScore = 0;
+        this.dispatchCurrentScore(this.currentScore);
+        this.movesWaitingToFire.clear();
 
         //add initial tiles
         const tile1Position = this.board.getRandomEmptyPosition();
@@ -93,42 +94,37 @@ class Game {
             }
             const moveVector = getVectorByKeyCode(e.keyCode);
             if (moveVector) {
-                if (this.areControllsEnabled()) {
-                    await this.move(moveVector);
-                } else {
-                    this.movesWaitingToFire.push(moveVector);
-                    return;
-                }
+                const parentInstance = this;
+                this.movesWaitingToFire.add(async function () {
+                    //change the move speed based on wheter or not there are alot of moves waiting to execute
+                    if (parentInstance.movesWaitingToFire.contents.length > 0) {
+                        MOVEMENT_TRANSITION_DURATION = CATCH_UP_TRANSITION_DURATION;
+                    } else {
+                        MOVEMENT_TRANSITION_DURATION = DEFAULT_TRANSITION_DURATION;
+                    }
+                    await parentInstance.move(moveVector);
+                    this.next();
+                });
             }
         };
-    }
-
-    enableControlls(transitionId) {
-        delete this.elementsInTransitionIds[transitionId];
-        if (this.areControllsEnabled()) {
-            //this.movesWaitingToFire;//START BATCHING!!!!!! TODO
-        }
-    }
-    disableControlls(transitionId) {
-        this.elementsInTransitionIds[transitionId] = true;
-    }
-    areControllsEnabled() {
-        return Object.keys(this.elementsInTransitionIds).length === 0;
     }
 
     async move(vector) {
         if (this.isLegalMove(vector)) {
             //console.log('legal move!');
             await this.makeMove(vector);
-            await Promise.all([this.mergeTiles(), this.addNewTileWithAnimation(2, this.board.getRandomEmptyPosition())]);
+            await Promise.all([
+                this.mergeTiles(),
+                this.addNewTileWithAnimation(2, this.board.getRandomEmptyPosition())
+            ]);
+            this.dispatchCurrentScore(this.currentScore);
             if (this.isGameOver()) {
-                alert('game over!');
                 this.endGame();
             } else {
-                console.log(this.board);
+                //do something
             }
         } else {
-            alert('invalid move!');
+            //alert('invalid move!');
         }
     }
 
@@ -158,6 +154,7 @@ class Game {
                     let tilesAtPosition = this.board.at(positionIterator);
                     const tilesValue = parseInt(this.board.tileAt(positionIterator).getAttribute('data-value'));
                     const newValue = tilesValue * 2;
+                    this.currentScore += newValue;
 
                     tilesAtPosition.forEach((tile) => {
                         this.board.removeTileFromCurrentPosition(tile);
@@ -262,30 +259,12 @@ class Game {
             for (let collumn = 0; collumn < 4; collumn++) {
                 for (let row = 0; row < 4; row++) {
                     this.board.at(new Position(collumn, row)).forEach((tile) => {
-                        allPromises.push(this.moveTileToProperPositionImmediatly(tile, isImmediate));
+                        allPromises.push(this.setTileToProperPlace(tile, isImmediate));
                     })
                 }
             }
             await Promise.all(allPromises);
             resolve();
-        })
-    }
-
-    async moveTileToProperPositionImmediatly(tileElement, isImmediate, isNew) {
-        const position = this.board.getTilePosition(tileElement);
-        //sets tile size, position and fontSize
-        if (tileElement === undefined) {
-            throw new Error('transitionTileToSquare tile is undefined!');
-        }
-
-        const squareElement = this.boardArray[position.collumn][position.row];
-        const squareElementRect = squareElement.getBoundingClientRect();
-
-        await this.editTile(tileElement, isImmediate, (tile) => {
-            tile.style.width = `${squareElement.offsetWidth}px`;
-            tile.style.height = `${squareElement.offsetHeight}px`;
-            tile.style.top = (squareElementRect.top + document.documentElement.scrollTop) + 'px';
-            tile.style.left = (squareElementRect.left + document.documentElement.scrollLeft) + 'px';
         })
     }
 
@@ -371,8 +350,6 @@ class Game {
     //(tile: tile, isImmediate: bool, editFunction: (tile)=>{...trigger a transition})
     async editTile(tile, isImmediate, editFunction) {
         return new Promise(async (resolve, reject) => {
-            const transitionUUID = uuid();
-
             //change the transitionDuration based on argument
             if (isImmediate) {
                 tile.style.transitionDuration = `${IMMEDIATE_TRANSITION_DURATION}ms`;
@@ -384,7 +361,6 @@ class Game {
 
             const callback = () => {
                 tile.removeEventListener("webkitTransitionEnd", callback);
-                this.enableControlls(transitionUUID)
                 resolve();
             }
 
@@ -405,8 +381,7 @@ class Game {
 
             editFunction(tile);
 
-            if (transitionTriggered(tile, transitionPropertiesBefore)) {
-                this.disableControlls(transitionUUID)
+            if (transitionTriggered(tile, transitionPropertiesBefore) && tile.style.transitionDuration !== '0ms') {
                 tile.addEventListener("webkitTransitionEnd", callback);
             } else {
                 resolve();

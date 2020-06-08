@@ -1,6 +1,5 @@
 import React from 'react';
 import GameComponent from './game/GameComponent';
-import { Link } from 'react-router-dom';
 
 export default (props) => (
     <div className='main-page-container'>
@@ -11,7 +10,10 @@ export default (props) => (
             </p>
             <p>
                 Share with friends<br />
-                <span className='twitter-share-button'>Tweet</span> <span className='facebook-share-button'>Facebook</span>
+                <span className='share-buttons-wrapper'>
+                    <a className="twitter-share-button" href="https://twitter.com/share?ref_src=twsrc%5Etfw" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
+                    <iframe className="facebook-share-button" title='facebook-share-button' src="https://www.facebook.com/plugins/share_button.php?href=https%3A%2F%2Froy-game2048.herokuapp.com&layout=button&size=large&width=77&height=28&appId" width="77" height="28" style={{ border: 'none', overflow: 'hidden' }} scrolling="no" frameBorder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+                </span>
             </p>
             <p>
                 - Do you still have free time after playing 2048?<br />
@@ -24,12 +26,12 @@ export default (props) => (
             </h1>
             <div className='links-squares__wrapper'>
                 <div className='links-squares__collumn'>
-                    <div className='link-square'><Link to='/tips-and-tricks'>{`Tips & Tricks`}</Link></div>
-                    <div className='link-square'><Link to='/quotes'>2048 Quotes</Link></div>
+                    <div className='link-square'><a href='https://2048game.com/tips-and-tricks'>{`Tips & Tricks`}</a></div>
+                    <div className='link-square'><a href='https://2048game.com/quotes'>2048 Quotes</a></div>
                 </div>
                 <div className='links-squares__collumn'>
-                    <div className='link-square'><Link to='/videos'>2048 Videos</Link></div>
-                    <div className='link-square'><Link to='/variations'>2048 Variations</Link></div>
+                    <div className='link-square'><a href='https://2048game.com/videos'>2048 Videos</a></div>
+                    <div className='link-square'><a href='https://2048game.com/variations'>2048 Variations</a></div>
                 </div>
             </div>
             <p>
@@ -39,11 +41,11 @@ export default (props) => (
                 This game is mobile compatible and you can play it on any device - iPhone, iPad or any other smartphone.
             </p>
             <p>
-                Common <Link to='/questions-and-answers'>questions and answers</Link> about 2048.<br />
+                Common <a href='https://2048game.com/questions-and-answers'>questions and answers</a> about 2048.<br />
                 Learn all about <i>2048</i>'s history on <a href='https://en.wikipedia.org/wiki/2048_(video_game)' target="_blank" rel="noopener noreferrer">wikipedia</a>.<br />
-                2048 <Link to='/news'>news references</Link>
+                2048 <a href='https://2048game.com/news'>news references</a>
             </p>
             <hr />
         </div>
-    </div>
+    </div >
 )

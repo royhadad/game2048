@@ -12,8 +12,12 @@ class Board extends React.Component {
         setBoardsHeightEqualToWidth();
         //create new game
         const boardElement = this.boardRef.current;
-        this.game = new Game(boardElement);
-        await this.game.init();
+        this.game = new Game(boardElement, this.props.setCurrentScore);
+        const startNewGameFunction = async () => {
+            await this.game.init();
+        }
+        this.props.setNewGameButton(startNewGameFunction);
+        await startNewGameFunction();
 
         //listen to screen size changes and adjust game tiles
         adjustBoardOnResize = (game) => {
@@ -27,8 +31,6 @@ class Board extends React.Component {
         window.removeEventListener('resize', () => { adjustBoardOnResize(this.game) });
     }
     render() {
-        //const { setCurrentScore } = this.props;
-
         const arr = [];
         let counter = 0;
         for (let i = 0; i < 4; i++) {
