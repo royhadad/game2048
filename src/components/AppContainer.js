@@ -1,14 +1,13 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import Footer from './Footer';
-import setBoardsHeightEqualToWidth from '../utility/setBoardsHeightEqualToWidth';
 
 function AppContainer(props) {
-    useEffect(() => {
-        window.addEventListener('resize', setBoardsHeightEqualToWidth);
-        return () => {
-            window.removeEventListener('resize', setBoardsHeightEqualToWidth);
-        }
-    }, [])
+    // useEffect(() => {
+    //     //add event listener
+    //     return () => {
+    //         //remove event listener
+    //     }
+    // }, [])
 
     return (
         <div className="app-container">

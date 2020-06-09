@@ -1,16 +1,14 @@
-//import getTransitionVectorsBetweenTwoElementsTopLeft from "../utility/getTransitionVectorsBetweenTwoElementsTopLeft";
 import Vector from './Vector';
 import Position from './Position';
 import TileBuilder from './TileBuilder';
 import Board from './Board';
 import getTileFontSizeFromTextLength from '../utility/getTileFontSizeFromTextLength';
-import asyncSetTimeOut from '../utility/asyncSetTimeOut';
 import Queue from 'js-queue';
 
 const LEFT_ARROW_KEY_CODE = 37;
 const UP_ARROW_KEY_CODE = 38;
 const RIGHT_ARROW_KEY_CODE = 39;
-const DOWN_ARROW_KEY_CODE = 40;//TODO MAYBE ADD ANOTHER DURATION STEP
+const DOWN_ARROW_KEY_CODE = 40;
 const DEFAULT_TRANSITION_DURATION = 100;
 const CATCH_UP_TRANSITION_DURATION = 0; //for when alot of moves need to happen quickly
 let MOVEMENT_TRANSITION_DURATION = DEFAULT_TRANSITION_DURATION;
@@ -129,7 +127,6 @@ class Game {
     }
 
     isGameOver() {
-        //TODO FIX BOARD CAN BE FULL
         if ((this.isLegalMove(new Vector(1, 0))) ||
             (this.isLegalMove(new Vector(-1, 0))) ||
             (this.isLegalMove(new Vector(0, 1))) ||
@@ -140,6 +137,7 @@ class Game {
         }
     }
     endGame() {
+        //TODO create game ended functionallity
         alert('game over!');
         this.init();
     }
@@ -353,11 +351,17 @@ class Game {
             //change the transitionDuration based on argument
             if (isImmediate) {
                 tile.style.transitionDuration = `${IMMEDIATE_TRANSITION_DURATION}ms`;
+                console.log('immediate');
+
             } else {
                 tile.style.transitionDuration = `${MOVEMENT_TRANSITION_DURATION}ms`;
+                console.log('long');
+
             }
+
+            //currently works without a timeout, weird
             //wait for transitionDuration to apply by waiting for next event loop
-            await asyncSetTimeOut(0);
+            //await asyncSetTimeOut(0);
 
             const callback = () => {
                 tile.removeEventListener("webkitTransitionEnd", callback);
@@ -382,8 +386,12 @@ class Game {
             editFunction(tile);
 
             if (transitionTriggered(tile, transitionPropertiesBefore) && tile.style.transitionDuration !== '0ms') {
+                console.log('long');
+
                 tile.addEventListener("webkitTransitionEnd", callback);
             } else {
+                console.log('immediate');
+
                 resolve();
             }
         })

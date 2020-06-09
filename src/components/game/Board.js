@@ -1,5 +1,4 @@
 import React from 'react';
-import setBoardsHeightEqualToWidth from '../../utility/setBoardsHeightEqualToWidth';
 import Game from '../../game/Game';
 
 let adjustBoardOnResize;
@@ -9,23 +8,22 @@ class Board extends React.Component {
         this.boardRef = React.createRef();
     }
     async componentDidMount() {
-        setBoardsHeightEqualToWidth();
         //create new game
         const boardElement = this.boardRef.current;
+        boardElement.style.height = getComputedStyle(boardElement).width;
         this.game = new Game(boardElement, this.props.setCurrentScore);
         const startNewGameFunction = async () => {
             await this.game.init();
         }
         this.props.setNewGameButton(startNewGameFunction);
-        await startNewGameFunction();
 
         //listen to screen size changes and adjust game tiles
         adjustBoardOnResize = (game) => {
-            setTimeout(() => {
-                game.placeAdjustAndMoveTilesToCorrectLocationOnBoard(true);
-            }, 0);
+            boardElement.style.height = getComputedStyle(boardElement).width;
+            game.placeAdjustAndMoveTilesToCorrectLocationOnBoard(true);
         }
         window.addEventListener('resize', () => { adjustBoardOnResize(this.game) });
+        await startNewGameFunction();
     }
     componentWillUnmount() {
         window.removeEventListener('resize', () => { adjustBoardOnResize(this.game) });
