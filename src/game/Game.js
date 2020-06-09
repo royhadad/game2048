@@ -4,6 +4,10 @@ import TileBuilder from './TileBuilder';
 import Board from './Board';
 import getTileFontSizeFromTextLength from '../utility/getTileFontSizeFromTextLength';
 import Queue from 'js-queue';
+import {
+    getElementLeftRelativeToClosesPositionedAncestor,
+    getElementTopRelativeToClosesPositionedAncestor
+} from '../utility/getPositionUtils';
 
 const LEFT_ARROW_KEY_CODE = 37;
 const UP_ARROW_KEY_CODE = 38;
@@ -21,9 +25,10 @@ const NUM_OF_ROWS = 4;
 //const MERGE_TRANSITION_DURATION = 1.0;// for dev, in production around 0.2
 
 class Game {
-    constructor(boardElement, dispatchCurrentScore) {
+    constructor(boardElement, dispatchCurrentScore, gameOverLayerElement) {
         this.boardElement = boardElement;
         this.dispatchCurrentScore = dispatchCurrentScore;
+        this.gameOverLayerElement = gameOverLayerElement;
         //bind functions to prevent "this" problems
         this.placeAdjustAndMoveTilesToCorrectLocationOnBoard = this.placeAdjustAndMoveTilesToCorrectLocationOnBoard.bind(this);
         this.movesWaitingToFire = new Queue();
@@ -42,6 +47,14 @@ class Game {
         this.board = new Board();
         this.currentScore = 0;
         this.dispatchCurrentScore(this.currentScore);
+
+        //make game ended message disappear
+        this.gameOverLayerElement.style.transitionDuration = '0ms';
+        this.gameOverLayerElement.style.opacity = '0%';
+        this.gameOverLayerElement.style.zIndex = '-1';
+
+        //enable and clear moves
+        this.controlsEnabled = true;
         this.movesWaitingToFire.clear();
 
         //add initial tiles
@@ -87,8 +100,11 @@ class Game {
                         return undefined;
                 }
             }
-            if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+            if ([37, 38, 39, 40].indexOf(e.keyCode) > -1) {
                 e.preventDefault();
+            }
+            if (!this.controlsEnabled) {
+                return;
             }
             const moveVector = getVectorByKeyCode(e.keyCode);
             if (moveVector) {
@@ -137,9 +153,10 @@ class Game {
         }
     }
     endGame() {
-        //TODO create game ended functionallity
-        alert('game over!');
-        this.init();
+        this.gameOverLayerElement.style.transitionDuration = '2000ms';
+        this.gameOverLayerElement.style.zIndex = '20';
+        this.gameOverLayerElement.style.opacity = '100%';
+        this.controlsEnabled = false;
     }
 
     async mergeTiles() {
@@ -299,10 +316,11 @@ class Game {
             const squareElement = this.boardArray[position.collumn][position.row];
             const squareElementRect = squareElement.getBoundingClientRect();
             const { width: squareWidth, height: squareHeight } = squareElementRect;
+
             tile.style.width = '0px';
             tile.style.height = '0px';
-            tile.style.top = (squareElementRect.top + document.documentElement.scrollTop) + squareHeight / 2 + 'px';
-            tile.style.left = (squareElementRect.left + document.documentElement.scrollLeft) + squareWidth / 2 + 'px';
+            tile.style.top = (getElementTopRelativeToClosesPositionedAncestor(squareElement, this.boardElement)) + squareHeight / 2 + 'px';
+            tile.style.left = (getElementLeftRelativeToClosesPositionedAncestor(squareElement, this.boardElement)) + squareWidth / 2 + 'px';
             tile.style.fontSize = '0vw';
             tile.innerText = '';
         })
@@ -312,17 +330,16 @@ class Game {
     async setTileToBigCenter(tile, isImmediate) {
         await this.editTile(tile, isImmediate, (tile) => {
             const growthFactor = 1.2;
-
             const value = parseInt(tile.getAttribute('data-value'));
             const position = this.board.getTilePosition(tile);
             const squareElement = this.boardArray[position.collumn][position.row];
-            const squareElementRect = squareElement.getBoundingClientRect();
             const newWidth = squareElement.offsetWidth * growthFactor;
             const newHeight = squareElement.offsetHeight * growthFactor;
+
             tile.style.width = `${newWidth}px`;
             tile.style.height = `${newHeight}px`;
-            tile.style.top = `${(squareElementRect.top + document.documentElement.scrollTop) - ((newHeight * (growthFactor - 1)) / 2)}px`;
-            tile.style.left = `${(squareElementRect.left + document.documentElement.scrollLeft) - ((newWidth * (growthFactor - 1)) / 2)}px`;
+            tile.style.top = `${(getElementTopRelativeToClosesPositionedAncestor(squareElement, this.boardElement)) - ((newHeight * (growthFactor - 1)) / 2)}px`;
+            tile.style.left = `${(getElementLeftRelativeToClosesPositionedAncestor(squareElement, this.boardElement)) - ((newWidth * (growthFactor - 1)) / 2)}px`;
             tile.style.fontSize = getTileFontSizeFromTextLength(value.toString().length);
             tile.innerText = value;
         })
@@ -334,12 +351,11 @@ class Game {
             const value = parseInt(tile.getAttribute('data-value'));
             const position = this.board.getTilePosition(tile);
             const squareElement = this.boardArray[position.collumn][position.row];
-            const squareElementRect = squareElement.getBoundingClientRect();
 
             tile.style.width = `${squareElement.offsetWidth}px`;
             tile.style.height = `${squareElement.offsetHeight}px`;
-            tile.style.top = (squareElementRect.top + document.documentElement.scrollTop) + 'px';
-            tile.style.left = (squareElementRect.left + document.documentElement.scrollLeft) + 'px';
+            tile.style.top = (getElementTopRelativeToClosesPositionedAncestor(squareElement, this.boardElement)) + 'px';
+            tile.style.left = (getElementLeftRelativeToClosesPositionedAncestor(squareElement, this.boardElement)) + 'px';
             tile.style.fontSize = getTileFontSizeFromTextLength(value.toString().length);
             tile.innerText = value;
         })
@@ -351,17 +367,9 @@ class Game {
             //change the transitionDuration based on argument
             if (isImmediate) {
                 tile.style.transitionDuration = `${IMMEDIATE_TRANSITION_DURATION}ms`;
-                console.log('immediate');
-
             } else {
                 tile.style.transitionDuration = `${MOVEMENT_TRANSITION_DURATION}ms`;
-                console.log('long');
-
             }
-
-            //currently works without a timeout, weird
-            //wait for transitionDuration to apply by waiting for next event loop
-            //await asyncSetTimeOut(0);
 
             const callback = () => {
                 tile.removeEventListener("webkitTransitionEnd", callback);
@@ -386,12 +394,8 @@ class Game {
             editFunction(tile);
 
             if (transitionTriggered(tile, transitionPropertiesBefore) && tile.style.transitionDuration !== '0ms') {
-                console.log('long');
-
                 tile.addEventListener("webkitTransitionEnd", callback);
             } else {
-                console.log('immediate');
-
                 resolve();
             }
         })

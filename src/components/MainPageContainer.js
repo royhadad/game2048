@@ -11,7 +11,7 @@ export default (props) => (
             <p>
                 Share with friends<br />
                 <span className='share-buttons-wrapper'>
-                    <a className="twitter-share-button" href="https://twitter.com/share?ref_src=twsrc%5Etfw" data-show-count="false">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
+                    <a className="twitter-share-button" href="https://twitter.com/share?ref_src=twsrc%5Etfw" data-show-count="false" target="_blank" rel="noopener noreferrer">Tweet</a><script async src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
                     <iframe className="facebook-share-button" title='facebook-share-button' src="https://www.facebook.com/plugins/share_button.php?href=https%3A%2F%2Froy-game2048.herokuapp.com&layout=button&size=large&width=77&height=28&appId" width="77" height="28" style={{ border: 'none', overflow: 'hidden' }} scrolling="no" frameBorder="0" allowtransparency="true" allow="encrypted-media"></iframe>
                 </span>
             </p>

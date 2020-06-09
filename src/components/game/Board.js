@@ -1,17 +1,19 @@
 import React from 'react';
 import Game from '../../game/Game';
+import Button from '../generics/Button';
 
 let adjustBoardOnResize;
 class Board extends React.Component {
     constructor(props) {
         super(props);
         this.boardRef = React.createRef();
+        this.gameOverLayerRef = React.createRef();
     }
     async componentDidMount() {
         //create new game
         const boardElement = this.boardRef.current;
         boardElement.style.height = getComputedStyle(boardElement).width;
-        this.game = new Game(boardElement, this.props.setCurrentScore);
+        this.game = new Game(boardElement, this.props.setCurrentScore, this.gameOverLayerRef.current);
         const startNewGameFunction = async () => {
             await this.game.init();
         }
@@ -53,6 +55,13 @@ class Board extends React.Component {
                         </div>
                     ))
                 }
+                <div className='game-over-layer' ref={this.gameOverLayerRef}>
+                    <div className='game-over-text'>Game over!</div>
+                    <div className='game-over-layer__buttons-wrapper'>
+                        <Button onClick={async () => { await this.game.init() }} text={'Try again'} />
+                        <Button onClick={() => { window.open('https://twitter.com/share?ref_src=twsrc%5Etfw') }} text={'Tweet'} />
+                    </div>
+                </div>
             </div>
         );
     }
