@@ -15,18 +15,15 @@ const RIGHT_ARROW_KEY_CODE = 39;
 const DOWN_ARROW_KEY_CODE = 40;
 const DEFAULT_TRANSITION_DURATION = 100;
 const CATCH_UP_TRANSITION_DURATION = 0; //for when alot of moves need to happen quickly
-let MOVEMENT_TRANSITION_DURATION = DEFAULT_TRANSITION_DURATION;
 const IMMEDIATE_TRANSITION_DURATION = 0;//in order to catch the transitionend event
 
 const NUM_OF_COLLUMNS = 4;
 const NUM_OF_ROWS = 4;
-//const MOVEMENT_TRANSITION_DURATION = 1.0;//for dev, in production 0.2
-//const CREATION_TRANSITION_DURATION = 1.0;//for dev, in production around 0.2
-//const MERGE_TRANSITION_DURATION = 1.0;// for dev, in production around 0.2
 
 class Game {
     constructor(boardElement, dispatchCurrentScore, gameOverLayerElement) {
         this.boardElement = boardElement;
+        this.movementTransitionDuration = DEFAULT_TRANSITION_DURATION;
         this.dispatchCurrentScore = dispatchCurrentScore;
         this.gameOverLayerElement = gameOverLayerElement;
         //bind functions to prevent "this" problems
@@ -112,9 +109,9 @@ class Game {
                 this.movesWaitingToFire.add(async function () {
                     //change the move speed based on wheter or not there are alot of moves waiting to execute
                     if (parentInstance.movesWaitingToFire.contents.length > 0) {
-                        MOVEMENT_TRANSITION_DURATION = CATCH_UP_TRANSITION_DURATION;
+                        this.movementTransitionDuration = CATCH_UP_TRANSITION_DURATION;
                     } else {
-                        MOVEMENT_TRANSITION_DURATION = DEFAULT_TRANSITION_DURATION;
+                        this.movementTransitionDuration = DEFAULT_TRANSITION_DURATION;
                     }
                     await parentInstance.move(moveVector);
                     this.next();
@@ -368,7 +365,7 @@ class Game {
             if (isImmediate) {
                 tile.style.transitionDuration = `${IMMEDIATE_TRANSITION_DURATION}ms`;
             } else {
-                tile.style.transitionDuration = `${MOVEMENT_TRANSITION_DURATION}ms`;
+                tile.style.transitionDuration = `${this.movementTransitionDuration}ms`;
             }
 
             const callback = () => {
