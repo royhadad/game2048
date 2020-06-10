@@ -109,9 +109,9 @@ class Game {
                 this.movesWaitingToFire.add(async function () {
                     //change the move speed based on wheter or not there are alot of moves waiting to execute
                     if (parentInstance.movesWaitingToFire.contents.length > 0) {
-                        this.movementTransitionDuration = CATCH_UP_TRANSITION_DURATION;
+                        parentInstance.movementTransitionDuration = CATCH_UP_TRANSITION_DURATION;
                     } else {
-                        this.movementTransitionDuration = DEFAULT_TRANSITION_DURATION;
+                        parentInstance.movementTransitionDuration = DEFAULT_TRANSITION_DURATION;
                     }
                     await parentInstance.move(moveVector);
                     this.next();
@@ -307,8 +307,8 @@ class Game {
 
         return tile;
     }
-    async setTileToSmallCenter(tile, isImmediate) {
-        await this.editTile(tile, isImmediate, (tile) => {
+    async setTileToSmallCenter(tileElement, isImmediate) {
+        await this.editTile(tileElement, isImmediate, (tile) => {
             const position = this.board.getTilePosition(tile);
             const squareElement = this.boardArray[position.collumn][position.row];
             const squareElementRect = squareElement.getBoundingClientRect();
@@ -324,8 +324,8 @@ class Game {
 
     }
 
-    async setTileToBigCenter(tile, isImmediate) {
-        await this.editTile(tile, isImmediate, (tile) => {
+    async setTileToBigCenter(tileElement, isImmediate) {
+        await this.editTile(tileElement, isImmediate, (tile) => {
             const growthFactor = 1.2;
             const value = parseInt(tile.getAttribute('data-value'));
             const position = this.board.getTilePosition(tile);
@@ -343,8 +343,8 @@ class Game {
 
     }
 
-    async setTileToProperPlace(tile, isImmediate) {
-        await this.editTile(tile, isImmediate, (tile) => {
+    async setTileToProperPlace(tileElement, isImmediate) {
+        await this.editTile(tileElement, isImmediate, (tile) => {
             const value = parseInt(tile.getAttribute('data-value'));
             const position = this.board.getTilePosition(tile);
             const squareElement = this.boardArray[position.collumn][position.row];
@@ -362,6 +362,8 @@ class Game {
     async editTile(tile, isImmediate, editFunction) {
         return new Promise(async (resolve, reject) => {
             //change the transitionDuration based on argument
+            console.log();
+
             if (isImmediate) {
                 tile.style.transitionDuration = `${IMMEDIATE_TRANSITION_DURATION}ms`;
             } else {
