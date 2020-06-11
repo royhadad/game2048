@@ -70,7 +70,7 @@ class Game {
         }
 
         await this.addManyNewTilesWithAnimation([
-            new TileBuilder(131072, tile1Position),
+            new TileBuilder(2, tile1Position),
             new TileBuilder(2, tile2Position)
         ])
     }
