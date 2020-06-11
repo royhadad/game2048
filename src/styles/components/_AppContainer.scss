@@ -3,14 +3,12 @@
     flex-direction: row;
 
     >.main-area-container{
-        width: 80%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
         background: $background-color;
         >.content-wrapper{
-            width: 40%;
             min-height: 100vh;
 
         }
@@ -19,7 +17,34 @@
         }
     }
     >.side-bar{
-        width: 10%;
         background: $side-bar-background;
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .app-container{    
+        >.main-area-container{
+            width: 100%;
+            >.content-wrapper{
+                width: 90%;    
+            }
+        }
+        >.side-bar{
+            width: 0%;
+        }
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    .app-container{    
+        >.main-area-container{
+            width: 80%;
+            >.content-wrapper{
+                width: 40%;    
+            }
+        }
+        >.side-bar{
+            width: 10%;
+        }
     }
 }

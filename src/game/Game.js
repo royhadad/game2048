@@ -8,6 +8,7 @@ import {
     getElementLeftRelativeToClosesPositionedAncestor,
     getElementTopRelativeToClosesPositionedAncestor
 } from '../utility/getPositionUtils';
+import SwipeListener from 'swipe-listener';
 
 const LEFT_ARROW_KEY_CODE = 37;
 const UP_ARROW_KEY_CODE = 38;
@@ -16,6 +17,11 @@ const DOWN_ARROW_KEY_CODE = 40;
 const DEFAULT_TRANSITION_DURATION = 100;
 const CATCH_UP_TRANSITION_DURATION = 0; //for when alot of moves need to happen quickly
 const IMMEDIATE_TRANSITION_DURATION = 0;//in order to catch the transitionend event
+
+const UP_VECTOR = new Vector(-1, 0);
+const DOWN_VECTOR = new Vector(1, 0);
+const LEFT_VECTOR = new Vector(0, -1);
+const RIGHT_VECTOR = new Vector(0, 1);
 
 const NUM_OF_COLLUMNS = 4;
 const NUM_OF_ROWS = 4;
@@ -64,7 +70,7 @@ class Game {
         }
 
         await this.addManyNewTilesWithAnimation([
-            new TileBuilder(2, tile1Position),
+            new TileBuilder(131072, tile1Position),
             new TileBuilder(2, tile2Position)
         ])
     }
@@ -82,29 +88,11 @@ class Game {
         });
     }
     setKeyListeners() {
-        document.onkeydown = async (e) => {
-            const getVectorByKeyCode = (keyCode) => {
-                switch (keyCode) {
-                    case LEFT_ARROW_KEY_CODE:
-                        return new Vector(0, -1);
-                    case RIGHT_ARROW_KEY_CODE:
-                        return new Vector(0, 1);
-                    case DOWN_ARROW_KEY_CODE:
-                        return new Vector(1, 0);
-                    case UP_ARROW_KEY_CODE:
-                        return new Vector(-1, 0);
-                    default:
-                        return undefined;
-                }
-            }
-            if ([37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-                e.preventDefault();
-            }
-            if (!this.controlsEnabled) {
-                return;
-            }
-            const moveVector = getVectorByKeyCode(e.keyCode);
+        const queueMove = (moveVector) => {
             if (moveVector) {
+                if (!this.controlsEnabled) {
+                    return;
+                }
                 const parentInstance = this;
                 this.movesWaitingToFire.add(async function () {
                     //change the move speed based on wheter or not there are alot of moves waiting to execute
@@ -117,7 +105,50 @@ class Game {
                     this.next();
                 });
             }
+        }
+
+        document.onkeydown = async (e) => {
+            const getVectorByKeyCode = (keyCode) => {
+                switch (keyCode) {
+                    case UP_ARROW_KEY_CODE:
+                        return UP_VECTOR;
+                    case DOWN_ARROW_KEY_CODE:
+                        return DOWN_VECTOR;
+                    case LEFT_ARROW_KEY_CODE:
+                        return LEFT_VECTOR;
+                    case RIGHT_ARROW_KEY_CODE:
+                        return RIGHT_VECTOR;
+                    default:
+                        return undefined;
+                }
+            }
+            if ([37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+                e.preventDefault();
+            }
+
+            queueMove(getVectorByKeyCode(e.keyCode));
         };
+
+        SwipeListener(this.boardElement, { preventScroll: true });
+        this.boardElement.addEventListener('swipe', (e) => {
+            e.preventDefault();
+            const getVectorByDirectionsObject = (direactionsObject) => {
+                if (direactionsObject.top) {
+                    return UP_VECTOR;
+                }
+                if (direactionsObject.bottom) {
+                    return DOWN_VECTOR;
+                }
+                if (direactionsObject.left) {
+                    return LEFT_VECTOR;
+                }
+                if (direactionsObject.right) {
+                    return RIGHT_VECTOR;
+                }
+                return undefined;
+            }
+            queueMove(getVectorByDirectionsObject(e.detail.directions));
+        })
     }
 
     async move(vector) {
@@ -337,7 +368,7 @@ class Game {
             tile.style.height = `${newHeight}px`;
             tile.style.top = `${(getElementTopRelativeToClosesPositionedAncestor(squareElement, this.boardElement)) - ((newHeight * (growthFactor - 1)) / 2)}px`;
             tile.style.left = `${(getElementLeftRelativeToClosesPositionedAncestor(squareElement, this.boardElement)) - ((newWidth * (growthFactor - 1)) / 2)}px`;
-            tile.style.fontSize = getTileFontSizeFromTextLength(value.toString().length);
+            tile.style.fontSize = getTileFontSizeFromTextLength(value.toString().length, this.boardElement);
             tile.innerText = value;
         })
 
@@ -353,7 +384,7 @@ class Game {
             tile.style.height = `${squareElement.offsetHeight}px`;
             tile.style.top = (getElementTopRelativeToClosesPositionedAncestor(squareElement, this.boardElement)) + 'px';
             tile.style.left = (getElementLeftRelativeToClosesPositionedAncestor(squareElement, this.boardElement)) + 'px';
-            tile.style.fontSize = getTileFontSizeFromTextLength(value.toString().length);
+            tile.style.fontSize = getTileFontSizeFromTextLength(value.toString().length, this.boardElement);
             tile.innerText = value;
         })
     }
