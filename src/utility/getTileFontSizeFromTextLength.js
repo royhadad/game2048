@@ -1,5 +1,5 @@
 export default (textLength1, boardElement) => {
-    const baseSize = boardElement.getBoundingClientRect().width / 9;
+    const baseSize = boardElement.getBoundingClientRect().width / 11;
 
     const getFontSizeFactor = (textLength2) => {
         if (textLength2 === 4) {
