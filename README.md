@@ -1,5 +1,7 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+enjoy!
+
 ## To clone and develop
 git clone git@github.com:royhadad/game2048.git
 add .env file
