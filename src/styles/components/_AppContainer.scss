@@ -26,7 +26,10 @@
         >.main-area-container{
             width: 100%;
             >.content-wrapper{
-                width: 90%;    
+                width: 90%;
+                .game-ui{
+                    margin-bottom: 12rem;
+                }
             }
         }
         >.side-bar{

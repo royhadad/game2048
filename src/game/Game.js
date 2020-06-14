@@ -171,10 +171,10 @@ class Game {
     }
 
     isGameOver() {
-        if ((this.isLegalMove(new Vector(1, 0))) ||
-            (this.isLegalMove(new Vector(-1, 0))) ||
-            (this.isLegalMove(new Vector(0, 1))) ||
-            (this.isLegalMove(new Vector(0, -1)))) {
+        if ((this.isLegalMove(UP_VECTOR)) ||
+            (this.isLegalMove(DOWN_VECTOR)) ||
+            (this.isLegalMove(LEFT_VECTOR)) ||
+            (this.isLegalMove(RIGHT_VECTOR))) {
             return false;
         } else {
             return true;
