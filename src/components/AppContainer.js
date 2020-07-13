@@ -1,6 +1,6 @@
 import React from 'react';
 import Footer from './Footer';
-
+import { Link } from 'react-router-dom'
 function AppContainer(props) {
     // useEffect(() => {
     //     //add event listener
@@ -13,6 +13,7 @@ function AppContainer(props) {
         <div className="app-container">
             <div className='side-bar'></div>
             <div className='main-area-container'>
+                <Link to='/sdgsf' >click me!!!</Link>
                 <div className='content-wrapper'>
                     {props.children}
                 </div>
