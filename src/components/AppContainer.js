@@ -13,7 +13,6 @@ function AppContainer(props) {
         <div className="app-container">
             <div className='side-bar'></div>
             <div className='main-area-container'>
-                <Link to='/sdgsf' >click me!!!</Link>
                 <div className='content-wrapper'>
                     {props.children}
                 </div>
